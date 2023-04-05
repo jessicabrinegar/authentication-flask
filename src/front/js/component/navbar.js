@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
+  const { store, actions } = useContext(Context);
+  const [toggle, setToggle] = useState(false);
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    actions.logout().then(() => {
+      navigate("/");
+    });
+  };
+  useEffect(() => {
+    setToggle(!toggle);
+  }, [token]);
 
   return (
     <nav className="navbar navbar-light bg-light">
@@ -20,6 +34,7 @@ export const Navbar = () => {
             <button
               className="btn btn-primary mx-1 border"
               style={{ backgroundColor: "#B04400" }}
+              onClick={handleLogout}
             >
               Logout
             </button>

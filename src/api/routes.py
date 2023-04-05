@@ -8,17 +8,25 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 
 api = Blueprint('api', __name__)
 
+#   File "/workspace/authentication-flask/src/api/routes.py", line 18, in create_token
+#     access_token = create_access_token(identity={'id': user.id})
+#   File "/workspace/authentication-flask/.venv/lib/python3.10/site-packages/flask_jwt_extended/utils.py", line 173, in create_access_token
+#     jwt_manager = get_jwt_manager()
+#   File "/workspace/authentication-flask/.venv/lib/python3.10/site-packages/flask_jwt_extended/internal_utils.py", line 31, in get_jwt_manager
+#     raise RuntimeError(
+# RuntimeError: You must initialize a JWTManager with this flask application before using this method
+
 @api.route("/login", methods=["POST"])
 def create_token():
     body = request.get_json(force=True)
-    user = db.session.query(User).filter(User.username == body['username']).first()
+    user = db.session.query(User).filter(User.email == body['email']).first()
     if user is None:
         return jsonify('Error: User does not exist.'), 401
-    elif user.password == body['password'] and user.username == body['username']:
+    elif user.password == body['password'] and user.email == body['email']:
         access_token = create_access_token(identity={'id': user.id})
         return jsonify(access_token = access_token, user=user.serialize()), 200
     else:
-        return jsonify(f'Error: Incorrect password was given for user: {user.username}.'), 401
+        return jsonify(f'Error: Incorrect password was given for user: {user.email}.'), 401
 
 
 @api.route('/register', methods=['POST'])
